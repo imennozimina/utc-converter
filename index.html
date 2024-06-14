@@ -208,44 +208,75 @@
     };
 
     function convertTime() {
-        const startTime = luxon.DateTime.fromFormat(document.getElementById('startTime').value, "d-M-yyyy H:mm", { zone: 'utc' });
-        const endTime = luxon.DateTime.fromFormat(document.getElementById('endTime').value, "d-M-yyyy H:mm", { zone: 'utc' });
+        const startTimeInput = document.getElementById('startTime').value;
+        const endTimeInput = document.getElementById('endTime').value;
 
-        console.log("Start Time (UTC):", startTime.toISO());
-        console.log("End Time (UTC):", endTime.toISO());
+        let startTime = null;
+        let endTime = null;
+        if (startTimeInput) {
+            startTime = luxon.DateTime.fromFormat(startTimeInput, "d-M-yyyy H:mm", { zone: 'utc' });
+        }
+        if (endTimeInput) {
+            endTime = luxon.DateTime.fromFormat(endTimeInput, "d-M-yyyy H:mm", { zone: 'utc' });
+        }
+
+        console.log("Start Time (UTC):", startTime ? startTime.toISO() : "Not provided");
+        console.log("End Time (UTC):", endTime ? endTime.toISO() : "Not provided");
 
         let resultHTML = '';
 
         Object.keys(geoTimeZones).forEach(geo => {
-            const startTimeConverted = startTime.setZone(geoTimeZones[geo]);
-            const endTimeConverted = endTime.setZone(geoTimeZones[geo]);
+            let formattedStartTime = null;
+            let formattedEndTime = null;
+            let startTimeUTC = startTime ? startTime.toFormat('dd.MM.yyyy, HH:mm \'UTC\'') : null;
+            let endTimeUTC = endTime ? endTime.toFormat('dd.MM.yyyy, HH:mm \'UTC\'') : null;
 
-            const startTimeUTC = startTime.toFormat('dd.MM.yyyy, HH:mm \'UTC\'');
-            const endTimeUTC = endTime.toFormat('dd.MM.yyyy, HH:mm \'UTC\'');
-
-            console.log(`${geo} Start Time:`, startTimeConverted.toISO());
-            console.log(`${geo} End Time:`, endTimeConverted.toISO());
-
-            let formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]);
-            let formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]);
-
-            if (geo === 'CA-EN') {
-                formattedStartTime = formattedStartTime.replace("AM", "am").replace("PM", "pm");
-                formattedEndTime = formattedEndTime.replace("AM", "am").replace("PM", "pm");
+            if (startTime) {
+                const startTimeConverted = startTime.setZone(geoTimeZones[geo]);
+                formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]);
+                if (geo === 'CA-EN') {
+                    formattedStartTime = formattedStartTime.replace("AM", "am").replace("PM", "pm");
+                }
             }
 
-            if (geo === 'KZ') {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} Астана уақыты бойынша</span></p>`;
-            } else if (geo === 'HI') {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC}) से ${formattedEndTime} (${endTimeUTC})</span></p>`;
-            } else if (geo === 'HI-EN') {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC}) – ${formattedEndTime} (${endTimeUTC})</span></p>`;
-            } else if (geo === 'BD-EN') {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
-            } else if (geo === 'BD') {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
-            } else {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
+            if (endTime) {
+                const endTimeConverted = endTime.setZone(geoTimeZones[geo]);
+                formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]);
+                if (geo === 'CA-EN') {
+                    formattedEndTime = formattedEndTime.replace("AM", "am").replace("PM", "pm");
+                }
+            }
+
+            if (formattedStartTime && formattedEndTime) {
+                if (geo === 'KZ') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} Астана уақыты бойынша</span></p>`;
+                } else if (geo === 'HI') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC}) से ${formattedEndTime} (${endTimeUTC})</span></p>`;
+                } else if (geo === 'HI-EN') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC}) – ${formattedEndTime} (${endTimeUTC})</span></p>`;
+                } else {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
+                }
+            } else if (formattedStartTime) {
+                if (geo === 'KZ') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} Астана уақыты бойынша</span></p>`;
+                } else if (geo === 'HI') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC})</span></p>`;
+                } else if (geo === 'HI-EN') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC})</span></p>`;
+                } else {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime}</span></p>`;
+                }
+            } else if (formattedEndTime) {
+                if (geo === 'KZ') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} Астана уақыты бойынша</span></p>`;
+                } else if (geo === 'HI') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} (${endTimeUTC})</span></p>`;
+                } else if (geo === 'HI-EN') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} (${endTimeUTC})</span></p>`;
+                } else {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime}</span></p>`;
+                }
             }
         });
 
