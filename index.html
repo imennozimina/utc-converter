@@ -181,7 +181,6 @@
         'KZ': 'Asia/Almaty',
         'UZ': 'Asia/Tashkent',
         'BD': 'Asia/Dhaka',
-        'BD-EN': 'Asia/Dhaka',
         'HI': 'Asia/Kolkata',
         'HI-EN': 'Asia/Kolkata',
         'ES-PE': 'America/Lima',
@@ -199,7 +198,6 @@
         'KZ': 'dd.MM.yyyy, HH:mm',  // Удалена часть 'Астана уақыты бойынша'
         'UZ': 'dd.MM.yyyy, \'Toshkent vaqti bilan\' HH:mm',
         'BD': 'dd.MM.yyyy, hh:mm a \'(GMT+6)\'',
-        'BD-EN': 'dd.MM.yyyy, hh:mm a \'(GMT+6)\'',
         'HI': 'dd.MM.yyyy, HH:mm \'GMT+5:30\'',
         'HI-EN': 'dd.MM.yyyy, HH:mm \'GMT+5:30\'',
         'ES-PE': 'dd.MM.yyyy, HH:mm \'hora local\'',
@@ -251,9 +249,9 @@
                 if (geo === 'KZ') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} Астана уақыты бойынша</span></p>`;
                 } else if (geo === 'HI') {
-                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC}) से ${formattedEndTime} (${endTimeUTC})</span></p>`;
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} से ${formattedEndTime}</span></p>`;
                 } else if (geo === 'HI-EN') {
-                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC}) – ${formattedEndTime} (${endTimeUTC})</span></p>`;
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
                 } else {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
                 }
@@ -261,9 +259,9 @@
                 if (geo === 'KZ') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} Астана уақыты бойынша</span></p>`;
                 } else if (geo === 'HI') {
-                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC})</span></p>`;
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime}</span></p>`;
                 } else if (geo === 'HI-EN') {
-                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} (${startTimeUTC})</span></p>`;
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime}</span></p>`;
                 } else {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime}</span></p>`;
                 }
@@ -271,9 +269,9 @@
                 if (geo === 'KZ') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} Астана уақыты бойынша</span></p>`;
                 } else if (geo === 'HI') {
-                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} (${endTimeUTC})</span></p>`;
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime}</span></p>`;
                 } else if (geo === 'HI-EN') {
-                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} (${endTimeUTC})</span></p>`;
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime}</span></p>`;
                 } else {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime}</span></p>`;
                 }
