@@ -190,7 +190,7 @@
 
     const geoFormats = {
         'UA': 'dd.MM.yyyy, HH:mm \'UTC+3\'',
-        'CA-EN': 'dd.MM.yyyy, hh:mm a \'EDT\'',
+        'CA-EN': 'dd.MM.yyyy, hh:mm a',
         'CA-FR': 'dd.MM.yyyy, HH:mm \'HAE\'',
         'TR': 'dd.MM.yyyy, HH:mm \'TSİ\'',
         'BR': 'dd.MM.yyyy, \'às\' HH:mm, \'horário local\'',
@@ -230,18 +230,24 @@
             let endTimeUTC = endTime ? endTime.toFormat('dd.MM.yyyy, HH:mm \'UTC\'') : null;
 
             if (startTime) {
-                const startTimeConverted = startTime.setZone(geoTimeZones[geo]);
+            const startTimeConverted = startTime.setZone(geoTimeZones[geo]);
+            if (geo === 'CA-EN') {
+                const isDaylightSaving = startTimeConverted.isInDST; // Проверяем, находится ли в летнем времени
+                const timeZoneAbbr = isDaylightSaving ? 'EDT' : 'EST'; // Меняем аббревиатуру на летнюю или зимнюю
+                formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]).replace("AM", "am").replace("PM", "pm") + ` ${timeZoneAbbr}`;
+            } else {
                 formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]);
-                if (geo === 'CA-EN') {
-                    formattedStartTime = formattedStartTime.replace("AM", "am").replace("PM", "pm");
-                }
+            }
             }
 
             if (endTime) {
                 const endTimeConverted = endTime.setZone(geoTimeZones[geo]);
-                formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]);
                 if (geo === 'CA-EN') {
-                    formattedEndTime = formattedEndTime.replace("AM", "am").replace("PM", "pm");
+                    const isDaylightSaving = endTimeConverted.isInDST; // Проверяем летнее время для конца
+                    const timeZoneAbbr = isDaylightSaving ? 'EDT' : 'EST';
+                    formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]).replace("AM", "am").replace("PM", "pm") + ` ${timeZoneAbbr}`;
+                } else {
+                    formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]);
                 }
             }
 
