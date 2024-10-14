@@ -174,35 +174,37 @@
     const geoTimeZones = {
         'UA': 'Europe/Kiev',
         'CA-EN': 'America/Toronto',
-        'CA-FR': 'America/Toronto',
-        'TR': 'Europe/Istanbul',
-        'BR': 'America/Sao_Paulo',
+        'CA-FR': 'America/Toronto',        
+        //'BR': 'America/Sao_Paulo',
         'AZ': 'Asia/Baku',
+        'RU(KZ/UZ)': 'Asia/Almaty',
         'KZ': 'Asia/Almaty',
         'UZ': 'Asia/Tashkent',
         'BD': 'Asia/Dhaka',
         'HI': 'Asia/Kolkata',
         'HI-EN': 'Asia/Kolkata',
-        'ES-PE': 'America/Lima',
+        //'ES-PE': 'America/Lima',
         'ES-CL': 'America/Santiago',
-        'ES-MX': 'America/Mexico_City'
+        'ES-MX': 'America/Mexico_City',
+        'TR': 'Europe/Istanbul'
     };
 
     const geoFormats = {
         'UA': 'dd.MM.yyyy, HH:mm \'UTC+3\'',
         'CA-EN': 'dd.MM.yyyy, hh:mm a',
         'CA-FR': 'dd.MM.yyyy, HH:mm \'HAE\'',
-        'TR': 'dd.MM.yyyy, HH:mm \'TSİ\'',
-        'BR': 'dd.MM.yyyy, \'às\' HH:mm, \'horário local\'',
+        //'BR': 'dd.MM.yyyy, \'às\' HH:mm, \'horário local\'',
         'AZ': 'dd.MM.yyyy, \'Bakı vaxtı ilə\' HH:mm',
+        'RU(KZ/UZ)': 'dd.MM.yyyy, HH:mm \'UTC+5\'',
         'KZ': 'dd.MM.yyyy, HH:mm',  // Удалена часть 'Астана уақыты бойынша'
         'UZ': 'dd.MM.yyyy, \'Toshkent vaqti bilan\' HH:mm',
         'BD': 'dd.MM.yyyy, hh:mm a \'(GMT+6)\'',
         'HI': 'dd.MM.yyyy, HH:mm \'GMT+5:30\'',
         'HI-EN': 'dd.MM.yyyy, HH:mm \'GMT+5:30\'',
-        'ES-PE': 'dd.MM.yyyy, HH:mm \'hora local\'',
+        //'ES-PE': 'dd.MM.yyyy, HH:mm \'hora local\'',
         'ES-CL': 'dd.MM.yyyy, HH:mm \'hora local\'',
-        'ES-MX': 'dd.MM.yyyy, HH:mm \'CDMX, Mexico\''
+        'ES-MX': 'dd.MM.yyyy, HH:mm \'CDMX, Mexico\'',
+        'TR': 'dd.MM.yyyy, HH:mm \'TSİ\''
     };
 
     function convertTime() {
