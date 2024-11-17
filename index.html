@@ -126,6 +126,15 @@
         .numInputWrapper span {
             width: 20px;
         }
+        .utc-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .utc-options input {
+            accent-color: #75a29f;
+            margin-right: 55px;
+        }
     </style>
 </head>
 <body>
@@ -134,13 +143,18 @@
     <h2>Event Time Converter</h2>
 
     <form id="timeForm">
-        <label for="startTime">Start Time (UTC 0):</label>
+        <label for="startTime">Start Time:</label>
         <input type="text" id="startTime" name="startTime" required>
         <br>
-        <label for="endTime">End Time (UTC 0):</label>
+        <label for="endTime">End Time:</label>
         <input type="text" id="endTime" name="endTime" required>
-        <br>
-        <button type="button" onclick="convertTime()">Convert Time</button>
+        <!-- Добавляем радио-кнопки для выбора часового пояса -->
+        <div class="utc-options">
+            <label><input type="radio" name="timezone" value="UTC"> UTC 0</label>
+            <label><input type="radio" name="timezone" value="UTC+2"> UTC+2</label>
+            <label><input type="radio" name="timezone" value="UTC+3" checked> UTC+3</label>
+        </div>
+        <button type="button" onclick="convertTime()">Convert</button>
     </form>
 
     <div class="result" id="result"></div>
@@ -155,9 +169,9 @@
         time_24hr: true,
         utc: true,
         minuteIncrement: 1,
-        onChange: function(selectedDates, dateStr, instance) {
+        onChange: function (selectedDates, dateStr, instance) {
             instance.input.blur();
-        }
+        },
     });
 
     flatpickr("#endTime", {
@@ -166,59 +180,68 @@
         time_24hr: true,
         utc: true,
         minuteIncrement: 1,
-        onChange: function(selectedDates, dateStr, instance) {
+        onChange: function (selectedDates, dateStr, instance) {
             instance.input.blur();
-        }
+        },
     });
 
     const geoTimeZones = {
-        'UA': 'Europe/Kiev',
-        'CA-EN': 'America/Toronto',
-        'CA-FR': 'America/Toronto',
-        'AZ': 'Asia/Baku',
-        'RU(KZ/UZ)': 'Asia/Almaty',
-        'KZ': 'Asia/Almaty',
-        'UZ': 'Asia/Tashkent',
-        'BD': 'Asia/Dhaka',
-        'HI': 'Asia/Kolkata',
-        'HI-EN': 'Asia/Kolkata',
-        'ES-CL': 'America/Santiago',
-        'ES-MX': 'America/Mexico_City',
-        'TR': 'Europe/Istanbul'
+        UA: "Europe/Kiev",
+        "CA-EN": "America/Toronto",
+        "CA-FR": "America/Toronto",
+        AZ: "Asia/Baku",
+        "RU(KZ/UZ)": "Asia/Almaty",
+        KZ: "Asia/Almaty",
+        UZ: "Asia/Tashkent",
+        BD: "Asia/Dhaka",
+        HI: "Asia/Kolkata",
+        "HI-EN": "Asia/Kolkata",
+        "ES-CL": "America/Santiago",
+        "ES-MX": "America/Mexico_City",
+        TR: "Europe/Istanbul",
     };
 
     const geoFormats = {
-        'UA': 'dd.MM.yyyy, HH:mm \'UTC+3\'',
-        'CA-EN': 'dd.MM.yyyy, hh:mm a',
-        'CA-FR': 'dd.MM.yyyy, HH:mm',
-        'AZ': 'dd.MM.yyyy, \'Bakı vaxtı ilə\' HH:mm',
-        'RU(KZ/UZ)': 'dd.MM.yyyy, HH:mm \'UTC+5\'',
-        'KZ': 'dd.MM.yyyy, HH:mm ',
-        'UZ': 'dd.MM.yyyy, \'Toshkent vaqti bilan\' HH:mm',
-        'BD': 'dd.MM.yyyy, hh:mm a \'(GMT+6)\'',
-        'HI': 'dd.MM.yyyy, HH:mm \'GMT+5:30\'',
-        'HI-EN': 'dd.MM.yyyy, HH:mm \'GMT+5:30\'',
-        'ES-CL': 'dd.MM.yyyy, HH:mm \'hora de Chile\'',
-        'ES-MX': 'dd.MM.yyyy, HH:mm \'CDMX, Mexico\'',
-        'TR': 'dd.MM.yyyy, HH:mm \'TSİ\''
+        UA: "dd.MM.yyyy, HH:mm 'UTC+3'",
+        "CA-EN": "dd.MM.yyyy, hh:mm a",
+        "CA-FR": "dd.MM.yyyy, HH:mm",
+        AZ: "dd.MM.yyyy, 'Bakı vaxtı ilə' HH:mm",
+        "RU(KZ/UZ)": "dd.MM.yyyy, HH:mm 'UTC+5'",
+        KZ: "dd.MM.yyyy, HH:mm",
+        UZ: "dd.MM.yyyy, 'Toshkent vaqti bilan' HH:mm",
+        BD: "dd.MM.yyyy, hh:mm a '(GMT+6)'",
+        HI: "dd.MM.yyyy, HH:mm 'GMT+5:30'",
+        "HI-EN": "dd.MM.yyyy, HH:mm 'GMT+5:30'",
+        "ES-CL": "dd.MM.yyyy, HH:mm 'hora de Chile'",
+        "ES-MX": "dd.MM.yyyy, HH:mm 'CDMX, Mexico'",
+        TR: "dd.MM.yyyy, HH:mm 'TSİ'",
     };
 
     function convertTime() {
-        const startTimeInput = document.getElementById('startTime').value;
-        const endTimeInput = document.getElementById('endTime').value;
+        const selectedTimeZone = document.querySelector(
+            'input[name="timezone"]:checked'
+        ).value;
+
+        const startTimeInput = document.getElementById("startTime").value;
+        const endTimeInput = document.getElementById("endTime").value;
 
         let startTime = null;
         let endTime = null;
+
         if (startTimeInput) {
-            startTime = luxon.DateTime.fromFormat(startTimeInput, "d-M-yyyy H:mm", { zone: 'utc' });
+            startTime = luxon.DateTime.fromFormat(startTimeInput, "d-M-yyyy H:mm", {
+                zone: selectedTimeZone,
+            });
         }
         if (endTimeInput) {
-            endTime = luxon.DateTime.fromFormat(endTimeInput, "d-M-yyyy H:mm", { zone: 'utc' });
+            endTime = luxon.DateTime.fromFormat(endTimeInput, "d-M-yyyy H:mm", {
+                zone: selectedTimeZone,
+            });
         }
 
-        let resultHTML = '';
+        let resultHTML = "";
 
-        Object.keys(geoTimeZones).forEach(geo => {
+        Object.keys(geoTimeZones).forEach((geo) => {
             let formattedStartTime = null;
             let formattedEndTime = null;
 
@@ -261,18 +284,19 @@
             }
 
 
+
             if (formattedStartTime && formattedEndTime) {
-            if (geo === 'KZ') {
-                // Показать "Астана уақыты бойынша" только один раз в конце
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} Астана уақыты бойынша</span></p>`;
-            } else if (geo === 'HI') {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} से ${formattedEndTime}</span></p>`;
-            } else {
-                resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
-            }
+                if (geo === 'KZ') {
+                    // Формат для КЗ, добавляем текст только в конце диапазона
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} Астана уақыты бойынша</span></p>`;
+                } else if (geo === 'HI') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} से ${formattedEndTime}</span></p>`;
+                } else {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime}</span></p>`;
+                }
             } else if (formattedStartTime) {
                 if (geo === 'KZ') {
-                    // Показать "Астана уақыты бойынша" только один раз после времени
+                    // Формат для КЗ, добавляем текст только для начального времени
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} Астана уақыты бойынша</span></p>`;
                 } else if (geo === 'HI') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime}</span></p>`;
@@ -281,7 +305,7 @@
                 }
             } else if (formattedEndTime) {
                 if (geo === 'KZ') {
-                    // Показать "Астана уақыты бойынша" только один раз после времени
+                    // Формат для КЗ, добавляем текст только для конечного времени
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} Астана уақыты бойынша</span></p>`;
                 } else if (geo === 'HI') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime}</span></p>`;
@@ -292,15 +316,15 @@
 
         });
 
-        document.getElementById('result').innerHTML = resultHTML;
+        document.getElementById("result").innerHTML = resultHTML;
 
-        document.querySelectorAll('.copyable-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const copyContent = this.querySelector('.copy-content').innerText;
+        document.querySelectorAll(".copyable-item").forEach((item) => {
+            item.addEventListener("click", function () {
+                const copyContent = this.querySelector(".copy-content").innerText;
                 navigator.clipboard.writeText(copyContent).then(() => {
-                    const copiedSpan = document.createElement('span');
-                    copiedSpan.className = 'copied show-copied';
-                    copiedSpan.innerText = 'copied';
+                    const copiedSpan = document.createElement("span");
+                    copiedSpan.className = "copied show-copied";
+                    copiedSpan.innerText = "copied";
                     this.appendChild(copiedSpan);
                     setTimeout(() => {
                         copiedSpan.remove();
@@ -310,6 +334,7 @@
         });
     }
 </script>
+
 
 </body>
 </html>
