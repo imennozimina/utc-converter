@@ -211,7 +211,7 @@
         UA: "dd.MM.yyyy, HH:mm",
         RU: "dd.MM.yyyy, HH:mm",
         "CA-EN": "dd.MM.yyyy, hh:mm a",
-        "CA-FR": "dd.MM.yyyy, hh:mm a",
+        "CA-FR": "dd.MM.yyyy, HH:mm",
         "RU(AZ)": "dd.MM.yyyy, HH:mm",
         AZ: "dd.MM.yyyy, HH:mm",
         "RU(KZ/UZ)": "dd.MM.yyyy, HH:mm",
@@ -280,7 +280,7 @@
                 } else if (geo === 'CA-FR') {
                     const isDaylightSaving = startTimeConverted.isInDST;
                     const timeZoneAbbr = isDaylightSaving ? 'HAE' : 'HNE';
-                    formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]).replace("AM", "am").replace("PM", "pm") + ` ${timeZoneAbbr}`;
+                    formattedStartTime = startTimeConverted.toFormat('dd.MM.yyyy, HH:mm') + ` ${timeZoneAbbr}`;
                 } else if (geo === 'UA') {
                     const isDaylightSaving = startTimeConverted.isInDST;
                     const timeZoneAbbr = isDaylightSaving ? 'UTC+3' : 'UTC+2';
@@ -299,7 +299,7 @@
                 } else if (geo === 'CA-FR') {
                     const isDaylightSaving = endTimeConverted.isInDST;
                     const timeZoneAbbr = isDaylightSaving ? 'HAE' : 'HNE';
-                    formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]).replace("AM", "am").replace("PM", "pm") + ` ${timeZoneAbbr}`;
+                    formattedEndTime = endTimeConverted.toFormat('dd.MM.yyyy, HH:mm') + ` ${timeZoneAbbr}`;
                 } else if (geo === 'UA') {
                     const isDaylightSaving = endTimeConverted.isInDST;
                     const timeZoneAbbr = isDaylightSaving ? 'UTC+3' : 'UTC+2';
