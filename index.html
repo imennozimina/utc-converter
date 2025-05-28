@@ -214,7 +214,7 @@
         RU: "dd.MM.yyyy, HH:mm",
         "CA-EN": "dd.MM.yyyy, hh:mm a",
         "CA-FR": "dd.MM.yyyy, HH:mm",
-        NG: "dd.MM.yyyy, HH:mm",
+        NG: "dd.MM.yyyy, hh:mm a",
         "RU(AZ)": "dd.MM.yyyy, HH:mm",
         AZ: "dd.MM.yyyy, HH:mm",
         "RU(KZ/UZ)": "dd.MM.yyyy, HH:mm",
@@ -289,6 +289,12 @@
                     const isDaylightSaving = startTimeConverted.isInDST;
                     const timeZoneAbbr = isDaylightSaving ? 'UTC+3' : 'UTC+2';
                     formattedStartTime = startTimeConverted.toFormat('dd.MM.yyyy, HH:mm') + ` ${timeZoneAbbr}`;
+                } else if (geo === 'NG') {
+                    // Нигерия — 12-часовой формат с маленькими am/pm
+                    formattedStartTime = startTimeConverted
+                      .toFormat(geoFormats[geo])
+                      .replace(/AM/g, 'am')
+                      .replace(/PM/g, 'pm');
                 } else {
                     formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]);
                 }
@@ -308,6 +314,11 @@
                     const isDaylightSaving = endTimeConverted.isInDST;
                     const timeZoneAbbr = isDaylightSaving ? 'UTC+3' : 'UTC+2';
                     formattedEndTime = endTimeConverted.toFormat('dd.MM.yyyy, HH:mm') + ` ${timeZoneAbbr}`;
+                } else if (geo === 'NG') {
+                    formattedEndTime = endTimeConverted
+                      .toFormat(geoFormats[geo])
+                      .replace(/AM/g, 'am')
+                      .replace(/PM/g, 'pm');
                 } else {
                     formattedEndTime = endTimeConverted.toFormat(geoFormats[geo]);
                 }
