@@ -99,6 +99,21 @@
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
+        .projects-panel{
+          background:#daede7; border:1px solid #4d6569; border-radius:8px;
+          padding:12px; margin:12px 0;
+        }
+        .projects-title{
+          font-weight:700; color:#4d6569; margin-bottom:8px;
+        }
+        .projects-list{ display:flex; flex-wrap:wrap; gap:10px }
+        .project-chip{
+          display:flex; align-items:center; gap:6px;
+          padding:6px 10px; border-radius:16px; border:1px solid #75a29f; background:#b2dbd3;
+          cursor:pointer; user-select:none;
+        }
+        .project-chip input{ accent-color:#75a29f; }
+
         .flatpickr-time .flatpickr-time-segment {
             width: 100%;
             display: flex;
@@ -154,6 +169,10 @@
             <label><input type="radio" name="timezone" value="UTC+2"> UTC+2</label>
             <label><input type="radio" name="timezone" value="UTC+3" checked> UTC+3</label>
         </div>
+        <div class="projects-panel">
+          <div class="projects-title">Projects</div>
+          <div id="projectFilters" class="projects-list"><!-- будет заполнено из JS --></div>
+        </div>
         <button type="button" onclick="convertTime()">Convert</button>
     </form>
 
@@ -188,8 +207,7 @@
     const geoTimeZones = {
         UA: "Europe/Kiev",
         RU: "Europe/Moscow",
-        "CA-EN": "America/Toronto",
-        "CA-FR": "America/Toronto",
+        "FR-CD": "Africa/Kinshasa",
         NG: "Africa/Lagos",
         KE: "Africa/Nairobi",        
         "RU(AZ)": "Asia/Baku",
@@ -207,7 +225,9 @@
         "ES-MX": "America/Mexico_City",
         "ES-EC": "America/Guayaquil",
         "ES-BO": "America/La_Paz",
-        "ES-CL": "America/Santiago",        
+        "ES-CL": "America/Santiago", 
+        "CA-EN": "America/Toronto",
+        "CA-FR": "America/Toronto",       
         TR: "Europe/Istanbul",
         KG: "Asia/Bishkek",
     };
@@ -215,8 +235,7 @@
     const geoFormats = {
         UA: "dd.MM.yyyy, HH:mm",
         RU: "dd.MM.yyyy, HH:mm",
-        "CA-EN": "dd.MM.yyyy, hh:mm a",
-        "CA-FR": "dd.MM.yyyy, HH:mm",
+        "FR-CD": "dd.MM.yyyy, HH:mm",
         NG: "dd.MM.yyyy, hh:mm a",
         KE: "dd.MM.yyyy, HH:mm",
         GY: "dd.MM.yyyy, HH:mm",
@@ -236,9 +255,77 @@
         "ES-EC": "dd.MM.yyyy, HH:mm",
         "ES-BO": "dd.MM.yyyy, HH:mm",
         "ES-CL": "dd.MM.yyyy, HH:mm",
+        "CA-EN": "dd.MM.yyyy, hh:mm a",
+        "CA-FR": "dd.MM.yyyy, HH:mm",
         TR: "dd.MM.yyyy, HH:mm",
         KG: "dd.MM.yyyy, HH:mm",
     };
+
+    // 1) Группы проектов → порядок гео внутри каждой — как ты просила
+    const projectGroups = {
+      AFRICA: ["FR-CD", "NG", "KE"],
+      AZ: ["RU(AZ)", "AZ"],
+      "KZ+UZ": ["RU(KZ/UZ)", "KZ", "UZ"],
+      "IN+BD": ["BD", "HI", "HI-EN"],
+      LATAM: ["EN-GY", "ES-NI", "ES-GT", "ES-HN", "ES-MX", "ES-EC", "ES-BO", "ES-CL"],
+      WL: ["CA-EN", "CA-FR", "TR", "KG"]
+    };
+
+    // 2) Служебный порядок для UA/RU всегда сверху
+    const anchorFirst = ["UA", "RU"];
+
+    // 3) Рендерим чекбоксы (включая ALL)
+    function buildProjectFilters() {
+      const holder = document.getElementById("projectFilters");
+      const items = ["ALL", ...Object.keys(projectGroups)];
+      holder.innerHTML = items.map(p => `
+        <label class="project-chip">
+          <input type="checkbox" name="project" value="${p}">
+          ${p}
+        </label>
+      `).join("");
+
+      holder.addEventListener("change", (e) => {
+        const allBox = holder.querySelector('input[value="ALL"]');
+        const boxes = [...holder.querySelectorAll('input[name="project"]')].filter(b => b.value !== "ALL");
+
+        if (e.target.value === "ALL") {
+          // Если кликнули ALL — сбрасываем остальные и оставляем только ALL
+          if (allBox.checked) boxes.forEach(b => b.checked = false);
+        } else {
+          // Если кликнули обычный проект — снимаем ALL
+          allBox.checked = false;
+        }
+
+        // live-обновление результата
+        convertTime();
+      });
+    }
+    buildProjectFilters();
+
+    // 4) Собираем целевой список GEO по выбранным проектам
+    function collectTargetGeos() {
+      const holder = document.getElementById("projectFilters");
+      const checked = [...holder.querySelectorAll('input[name="project"]:checked')].map(i => i.value);
+
+      // Если ВСЕ — отдаём весь список ключей, но с UA/RU сверху
+      if (checked.includes("ALL")) {
+        const allGeos = Object.keys(geoTimeZones);
+        return [...anchorFirst, ...allGeos.filter(g => !anchorFirst.includes(g))];
+      }
+
+      // Если ничего не выбрано — покажем только UA/RU (ориентир)
+      if (checked.length === 0) return [...anchorFirst];
+
+      // Иначе: UA/RU + объединение GEO из отмеченных проектов (без дублей), с сохранением порядка
+      const set = new Set();
+      anchorFirst.forEach(g => set.add(g));
+      checked.forEach(p => {
+        projectGroups[p].forEach(g => set.add(g));
+      });
+      return [...set];
+    }
+
 
     function convertTime() {
         const selectedTimeZone = document.querySelector(
@@ -264,7 +351,9 @@
 
         let resultHTML = "";
 
-        Object.keys(geoTimeZones).forEach((geo) => {
+        const targetGeos = collectTargetGeos();
+        targetGeos.forEach((geo) => {
+
             let startTimeConverted = null;
             let endTimeConverted   = null;
             let formattedStartTime = null;
@@ -367,6 +456,8 @@
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} hora de Nicaragua</span></p>`;
                 } else if (geo === 'KE') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} EAT</span></p>`;
+                } else if (geo === 'FR-CD') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} WAT</span></p>`;
                 } else if (geo === 'HI') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} से ${formattedEndTime} GMT+5:30</span></p>`;
                 } else if (geo === 'HI-EN') {
@@ -418,6 +509,8 @@
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} hora de Nicaragua</span></p>`;
                 } else if (geo === 'KE') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} EAT</span></p>`;
+                } else if (geo === 'FR-CD') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} WAT</span></p>`;
                 } else if (geo === 'RU(KZ/UZ)') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} UTC+5</span></p>`;
                 } else if (geo === 'HI') {
@@ -471,6 +564,8 @@
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} hora de Nicaragua</span></p>`;
                 } else if (geo === 'KE') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} EAT</span></p>`;
+                } else if (geo === 'FR-CD') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} WAT</span></p>`;
                 } else if (geo === 'RU(KZ/UZ)') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} UTC+5</span></p>`;
                 } else if (geo === 'HI') {
