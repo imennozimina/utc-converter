@@ -225,7 +225,8 @@
         "ES-MX": "America/Mexico_City",
         "ES-EC": "America/Guayaquil",
         "ES-BO": "America/La_Paz",
-        "ES-CL": "America/Santiago", 
+        "ES-CL": "America/Santiago",
+        "ES-CR": "America/Costa_Rica", 
         "CA-EN": "America/Toronto",
         "CA-FR": "America/Toronto",       
         TR: "Europe/Istanbul",
@@ -255,6 +256,7 @@
         "ES-EC": "dd.MM.yyyy, HH:mm",
         "ES-BO": "dd.MM.yyyy, HH:mm",
         "ES-CL": "dd.MM.yyyy, HH:mm",
+        "ES-CR": "dd.MM.yyyy, hh:mm a",
         "CA-EN": "dd.MM.yyyy, hh:mm a",
         "CA-FR": "dd.MM.yyyy, HH:mm",
         TR: "dd.MM.yyyy, HH:mm",
@@ -267,7 +269,7 @@
       AZ: ["RU(AZ)", "AZ"],
       "KZ+UZ": ["RU(KZ/UZ)", "KZ", "UZ"],
       "IN+BD": ["BD", "HI", "HI-EN"],
-      LATAM: ["EN-GY", "ES-NI", "ES-GT", "ES-HN", "ES-MX", "ES-EC", "ES-BO", "ES-CL"],
+      LATAM: ["EN-GY", "ES-NI", "ES-GT", "ES-HN", "ES-MX", "ES-EC", "ES-BO", "ES-CL", "ES-CR"],
       WL: ["CA-EN", "CA-FR", "TR", "KG", "RU(AZ)", "AZ", "RU(KZ/UZ)", "KZ"]
     };
 
@@ -403,6 +405,12 @@
                       .toFormat(geoFormats[geo])
                       .replace(/AM/g, 'am')
                       .replace(/PM/g, 'pm');
+                } else if (geo === 'ES-CR') {
+                    // Коста-Рика — 12-часовой формат с маленькими am/pm
+                    formattedStartTime = startTimeConverted
+                      .toFormat(geoFormats[geo])
+                      .replace(/AM/g, 'am')
+                      .replace(/PM/g, 'pm');
                 } else {
                     formattedStartTime = startTimeConverted.toFormat(geoFormats[geo]);
                 }
@@ -432,6 +440,11 @@
                       .toFormat(geoFormats[geo])
                       .replace(/AM/g, 'am')
                       .replace(/PM/g, 'pm');
+                } else if (geo === 'ES-CR') {
+                    formattedEndTime = endTimeConverted
+                      .toFormat(geoFormats[geo])
+                      .replace(/AM/g, 'am')
+                      .replace(/PM/g, 'pm');
                 } else if (geo === 'EN-GY') {
                     formattedEndTime = endTimeConverted
                       .toFormat(geoFormats[geo])
@@ -454,6 +467,8 @@
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} WAT</span></p>`;
                 } else if (geo === 'ES-NI') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} hora de Nicaragua</span></p>`;
+                } else if (geo === 'ES-CR') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} CST</span></p>`;
                 } else if (geo === 'KE') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} – ${formattedEndTime} EAT</span></p>`;
                 } else if (geo === 'FR-CD') {
@@ -507,6 +522,8 @@
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} WAT</span></p>`;
                 } else if (geo === 'ES-NI') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} hora de Nicaragua</span></p>`;
+                } else if (geo === 'ES-CR') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} CST</span></p>`;
                 } else if (geo === 'KE') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedStartTime} EAT</span></p>`;
                 } else if (geo === 'FR-CD') {
@@ -562,6 +579,8 @@
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} WAT</span></p>`;
                 } else if (geo === 'ES-NI') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} hora de Nicaragua</span></p>`;
+                } else if (geo === 'ES-CR') {
+                    resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} CST</span></p>`;
                 } else if (geo === 'KE') {
                     resultHTML += `<p class="copyable-item"><span class="geo-label">${geo}:</span><span class="copy-content">${formattedEndTime} EAT</span></p>`;
                 } else if (geo === 'FR-CD') {
